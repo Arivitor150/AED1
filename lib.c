@@ -2,51 +2,44 @@
 #include <stdlib.h>
 #include "lib.h"
 
-void refreshVar(void *pBuffer, void **op, void **count, void **lp, tipoagenda **FirstC, tipoagenda**LastC){
+void attVar(void *pBuffer, void **op, void **count, void **lp){
     *op = pBuffer;
     *lp = pBuffer+sizeof(int);
     *count = pBuffer + (2*sizeof(int));
 
-    if(*(int *)(pBuffer + (2*sizeof(int))) > 0){ // Verify if count > 0
-        *FirstC = pBuffer + (2*sizeof(int)) + (sizeof(tipoagenda)); // If count > 0 we should refresh the pointer to contact list
-        *LastC = pBuffer + (2*sizeof(int)) + ( *(int *)(pBuffer + (2*sizeof(int))) * sizeof(tipoagenda));
-    }else{
-        *FirstC = NULL;
-        *LastC = NULL;
-    }
 }
 
-void AddTo(void *pBuffer, int *count){
+void adcTo(void *pBuffer, int *count){
 
         *count = *count + 1;
 
         pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ( (*count) * sizeof(tipoagenda)));
         tipoagenda * test;
 
-        test = pBuffer + (3 * sizeof(int)) + ( (*count) * sizeof(tipoagenda));
+        test = pBuffer + (3 * sizeof(int)) + ( (*(int *)(pBuffer + (2*sizeof(int)))) * sizeof(tipoagenda));
 
         printf("Digite o Numero\n");
-        fflush(stdin);
-        scanf("%d", &test->cphone);
+        scanf("%d",&test->cfone);
         printf("Digite o Nome\n");
-        fflush(stdin);
-        fgets (test->name , (sizeof(char)*10) , stdin);
+        __fpurge(stdin);
+        fgets (test->nome , (sizeof(char)*10) , stdin);
+
 }
 
-void PrintAll(void *pBuffer, tipoagenda **FirstC, tipoagenda **LastC){
-    printf("P1 %d\n", *FirstC);
-    printf("P2 %d\n", *LastC);
+void printAll(void *pBuffer, void *count, void *lp){
+    printf("Buffer: %d\n", pBuffer + (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)));
 
-    if(*(int *)(pBuffer + (2*sizeof(int)))>0){
+    if(*(int *)count > 0){
         tipoagenda * test;
-        for(*FirstC = *FirstC; *FirstC < *LastC;){
-            test = pBuffer + (sizeof(int)*3) + sizeof(tipoagenda) * (*(int *)(pBuffer + (2*sizeof(int))));
-            printf("\n");
-            printf("Phone:%d\n", test->cphone);
-            printf("Name:%s\n", test->name);
-            printf("\n");
+        for(*(int *)lp = 0; *(int *)lp < *(int *)count; *(int *)lp++){
+
+                test = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
+                printf("\n");
+                printf("Phone:%d\n", test->fone);
+                printf("Name:%s\n", test->nome);
+                printf("\n");
         }
-    }
+}
 }
 
 void menu(){
