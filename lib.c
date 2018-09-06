@@ -21,21 +21,21 @@ void adcTo(void *pBuffer, int *count){
         printf("Digite o Numero\n");
         scanf("%d",&test->cfone);
         printf("Digite o Nome\n");
-        __fpurge(stdin);
+        //__fpurge(stdin);
         fgets (test->nome , (sizeof(char)*10) , stdin);
 
 }
 
 void printAll(void *pBuffer, void *count, void *lp){
-    printf("Buffer: %d\n", pBuffer + (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)));
+    printf("Buffer: %p\n", pBuffer + (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)));
 
     if(*(int *)count > 0){
         tipoagenda * test;
-        for(*(int *)lp = 0; *(int *)lp < *(int *)count; *(int *)lp++){
+        for(*(int *)lp = 0; (*(int *)lp) < (*(int *)count); (*(int *)lp)++){
 
                 test = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
                 printf("\n");
-                printf("Phone:%d\n", test->fone);
+                printf("Phone:%d\n", test->cfone);
                 printf("Name:%s\n", test->nome);
                 printf("\n");
         }
