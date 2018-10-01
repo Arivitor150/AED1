@@ -8,7 +8,7 @@ typedef struct Agenda{
 
 void menu();
 void attVar(void *pBuffer, void **op, void **count, void **lp);
-void adcTo(void *pBuffer, int *count);
+void adcTo(void *pBuffer, void *count);
 void printAll(void *pBuffer, void *count, void *lp);
 
 int main()
@@ -19,16 +19,20 @@ int main()
     void *lp;       // contato a ser exibido(varia até ser igual ao número de contatos)
     tipoagenda * completa;
 
-    pBuffer = (void*)malloc((sizeof(int)*3));
-    *(int *)pBuffer = 0; // Menu de Opção
-    *(int *)(pBuffer + sizeof(int)) = 0; // Looping
-    *(int *)(pBuffer + (2*sizeof(int))) = 0; // Variavel Contadora
+    pBuffer = ((void*)malloc((sizeof(int)*3) + sizeof(tipoagenda)));
+  //pBuffer = 3 vars de controle + 1 contato vazio;  
+    (*(int *)pBuffer) = 0; // Menu de Opção
+    (*(int *)(pBuffer + sizeof(int))) = 0; // Looping
+    (*(int *)(pBuffer + (2*sizeof(int)))) = 0; // Variavel Contadora
+    printf("0- %d \n",*(int *)pBuffer);
+    printf("1- %d \n",*(int *)(pBuffer + sizeof(int)));
+    printf("2- %d \n",*(int *)(pBuffer+(2*sizeof(int))));
 
 
-    attVar(pBuffer,&op,&count,&lp);
-    adcTo(pBuffer, count);
-    attVar(pBuffer,&op,&count,&lp);
-    adcTo(pBuffer, count);
+    //attVar(pBuffer,&op,&count,&lp);
+    //adcTo(pBuffer, count);
+    //attVar(pBuffer,&op,&count,&lp);
+    //adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
     adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
@@ -66,36 +70,36 @@ void attVar(void *pBuffer, void **op, void **count, void **lp){
 
 }
 
-void adcTo(void *pBuffer, int *count){
+void adcTo(void *pBuffer, void *count){
 
-        *count = *count + 1;
+        *(int *)count = (*(int *)count) + 1;
 
-        pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ( (*count) * sizeof(tipoagenda)));
-        tipoagenda * test;
+        pBuffer = realloc(pBuffer, ((sizeof(int)*3) + sizeof(tipoagenda)) + ( (*(int *)count) * sizeof(tipoagenda)));
+        tipoagenda *add;
 
-        test = pBuffer + (3 * sizeof(int)) + ( (*(int *)(pBuffer + (2*sizeof(int)))) * sizeof(tipoagenda));
-
+        add = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)count) * sizeof(tipoagenda))));
+        printf("Buffer(add): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
         printf("Digite o Numero\n");
-        scanf("%d",&test->cfone);
+        scanf("%d",&add->cfone);
         getchar(); //pega o enter, para ele n ser pego pela proxima leitura
         printf("Digite o Nome\n");
         //__fpurge(stdin); no achou a função, para limpar o buffer do teclado
-        fgets (test->nome , (sizeof(char)*10) , stdin);
+        fgets (add->nome , (sizeof(char)*10) , stdin);
 
 }
 
 void printAll(void *pBuffer, void *count, void *lp){
-    printf("Buffer: %p\n", pBuffer + (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)));
+   printf("Buffer(print): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
 
-    if(*(int *)count > 0){
-        tipoagenda * completa;
-        for(*(int *)lp = 0; (*(int *)lp) < (*(int *)count); (*(int *)lp)++){
+    if((*(int *)count) > 0){
+        tipoagenda *exibe;
+        for((*(int *)lp) = 0; (*(int *)lp) < (*(int *)count); (*(int *)lp)++){
 
-                completa = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda)); 
-            //  completa = inicio da area de memoria + vars de controle + contato a ser exibido;
+                exibe = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)lp) * sizeof(tipoagenda)))); 
+            //  exibe = inicio da area de memoria + vars de controle + contato vazio + contato a ser exibido;
                 printf("\n");
-                printf("Phone:%d\n", completa->cfone);
-                printf("Name:%s\n", completa->nome);
+                printf("Fone: %d\n", exibe->cfone);
+                printf("Nome:  %s\n", exibe->nome);
                 printf("\n");
         }
 }
