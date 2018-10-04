@@ -8,8 +8,8 @@ typedef struct Agenda{
 
 void menu();
 void attVar(void *pBuffer, void **op, void **count, void **lp);
-void adcTo(void *pBuffer, void *count);
-void remover(void *pBuffer, void *count, void *lp);
+void *adcTo(void *pBuffer, void *count);
+void *remover(void *pBuffer, void *count, void *lp);
 void printAll(void *pBuffer, void *count, void *lp);
 
 int main()
@@ -25,7 +25,7 @@ int main()
 
     (*(int *)pBuffer) = 0; // Menu de Opção
     (*(int *)(pBuffer + sizeof(int))) = 0; // Looping
-    (*(int *)(pBuffer + (2*sizeof(int)))) = 0; // Variavel Contadora
+    (*(int *)(pBuffer + (2*sizeof(int)))) = 1; // Variavel Contadora, o primeiro é auxiliar
     printf("op- %d \n",*(int *)pBuffer);
     printf("lp- %d \n",*(int *)(pBuffer + sizeof(int)));
     printf("count- %d \n",*(int *)(pBuffer+(2*sizeof(int))));
@@ -34,11 +34,11 @@ int main()
     //attVar(pBuffer,&op,&count,&lp);
     //adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
-    adcTo(pBuffer, count);
+    pBuffer = adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
-    adcTo(pBuffer, count);
+    pBuffer = adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
-    remover(pBuffer, count, lp);
+    //pBuffer = remover(pBuffer, count, lp);
     printAll(pBuffer,count,lp);
 
 
@@ -74,33 +74,35 @@ void attVar(void *pBuffer, void **op, void **count, void **lp){
 
 }
 
-void adcTo(void *pBuffer, void *count){
 
-        *(int *)count = (*(int *)count) + 1;
-        printf("count- %d \n",*(int *)(pBuffer+(2*sizeof(int))));
 
-        pBuffer = realloc(pBuffer, ((sizeof(int)*3) + sizeof(tipoagenda)) + ( (*(int *)count) * sizeof(tipoagenda)));
+void *adcTo(void *pBuffer, void *count){
         tipoagenda *add;
+        *(int *)count = (*(int *)count) + 1;
+//printf("count- %d \n",*(int *)(pBuffer+(2*sizeof(int))));
 
-        add = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)count) * sizeof(tipoagenda))));
-        printf("Buffer(add): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
-        printf("Digite o Numero\n");
+        pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)));
+        add = pBuffer + (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda));
+
+//printf("Buffer(add): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
+        printf("Digite o Numero \n");
         scanf("%d",&add->cfone);
         getchar(); //pega o enter, para ele n ser pego pela proxima leitura
-        printf("Digite o Nome\n");
-        //__fpurge(stdin); no achou a função, para limpar o buffer do teclado
-        fgets (add->nome , (sizeof(char)*10) , stdin);
-
+        printf("Digite o Nome \n");
+//__fpurge(stdin); // no achou a função, para limpar o buffer do teclado(windows)
+        fgets (add->nome , (10 * sizeof(char)) , stdin);
+        printf("\n");
+return pBuffer;
 }
 
 void printAll(void *pBuffer, void *count, void *lp){
-   printf("Buffer(print): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
+//printf("Buffer(print): %p \n", pBuffer + (3 * sizeof(int)) + sizeof(tipoagenda) + ( (*(int *)count) * sizeof(tipoagenda)));
+   tipoagenda *exibe;
 
     if((*(int *)count) > 0){
-        tipoagenda *exibe;
-        for((*(int *)lp) = 0; (*(int *)lp) < (*(int *)count); (*(int *)lp)++){
-
-                exibe = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)lp) * sizeof(tipoagenda))));
+        for( *(int *)lp = 2; *(int *)lp <= *(int *)count; (*(int *)lp)++ ){
+                //printf("Buffer(print): %p \n", pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda)));
+                exibe = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
             //  exibe = inicio da area de memoria + vars de controle + contato vazio + contato a ser exibido;
                 printf("\n");
                 printf("Fone: %d \n", exibe->cfone);
@@ -111,25 +113,26 @@ void printAll(void *pBuffer, void *count, void *lp){
 }
 
 
-void remover(void *pBuffer, void *count, void *lp){
+void *remover(void *pBuffer, void *count, void *lp){
    
-        tipoagenda *remove,*aux;
+        tipoagenda *rem,*aux;
         aux = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda)));
 
-        printf("Digite o numero que do contato que você deseja remover. \n");
-        	scanf("%d",&aux->cfone);
+        printf("Digite o numero do contato que você deseja remover. \n");
+        	scanf("%d",&rem->cfone);
         	getchar(); //pega o enter, para ele n ser pego pela proxima leitura
       
-        for((*(int *)lp) = 0; (*(int *)lp) < (*(int *)count); (*(int *)lp)++){
+        for( *(int *)lp = 2; *(int *)lp <= *(int *)count; (*(int *)lp)++){
 
-            remove = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)lp) * sizeof(tipoagenda))));
-            if(remove->cfone==aux->cfone){
+            aux = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
+            if(aux->cfone == rem->cfone){
             	while((*(int *)lp) < (*(int *)count)){
             		(*(int *)lp)++;
-            		remove = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda) + ((*(int *)lp) * sizeof(tipoagenda))));
+            		rem = (pBuffer + ((sizeof(int)*3) + ((*(int *)lp) * sizeof(tipoagenda))));
                 }
             }
         }
+return pBuffer;
 }
 
 void menu(){
