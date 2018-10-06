@@ -19,7 +19,6 @@ int main()
     void *op;       // Opção do menu
     void *count;    // Número de contatos
     void *lp;       // contato a ser exibido(varia até ser igual ao número de contatos)
-    tipoagenda * completa;
 
     pBuffer = ((void*)malloc((sizeof(int)*3) + sizeof(tipoagenda)));
   //pBuffer = 3 vars de controle + 1 contato vazio;
@@ -114,7 +113,7 @@ void *remover(void *pBuffer, void *count, void *lp){
                     rem->cfone = aux->cfone;
                 }
             (*(int *)count)--;
-            pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ((*(int *)count) * sizeof(struct Agenda)));
+            pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ((*(int *)count) * sizeof(tipoagenda)));
             return pBuffer;
             }
         }
