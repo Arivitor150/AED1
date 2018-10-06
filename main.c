@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct Agenda{
     int cfone;
@@ -31,32 +32,17 @@ int main()
     printf("count- %d \n",*(int *)(pBuffer+(2*sizeof(int))));
 
 
-    //attVar(pBuffer,&op,&count,&lp);
-    //adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
     pBuffer = adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
     pBuffer = adcTo(pBuffer, count);
     attVar(pBuffer,&op,&count,&lp);
-    //pBuffer = remover(pBuffer, count, lp);
+    pBuffer = adcTo(pBuffer, count);
+    attVar(pBuffer,&op,&count,&lp);
+    pBuffer = remover(pBuffer, count, lp);
+    attVar(pBuffer,&op,&count,&lp);
     printAll(pBuffer,count,lp);
 
-
-
-    /* teste com apenas 1 contato
-    attVar(pBuffer, &op, &count, &lp);
-    adcTo(pBuffer, count);
-    attVar(pBuffer, &op, &count, &lp);
-    completa = pBuffer + (sizeof(int)*3) + ( *(int *)count * sizeof(tipoagenda));
-    printf("Phone : %d\n", completa->cfone);
-    printf("Nome  : %s \n", completa->nome);
-    */
-
-    /*AddTo(pBuffer, *(int *)op);
-    refreshVar(pBuffer, &op, &count, &lp);
-    completa = pBuffer + (sizeof(int)*3) + ( *(int *)count * sizeof(tipoagenda));
-    printf("Phone : %d\n", completa->fone);
-    printf("Nome  : %s \n", completa->nome); */
 
 
     free(pBuffer);
@@ -104,34 +90,35 @@ void printAll(void *pBuffer, void *count, void *lp){
                 //printf("Buffer(print): %p \n", pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda)));
                 exibe = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
             //  exibe = inicio da area de memoria + vars de controle + contato vazio + contato a ser exibido;
-                printf("\n");
                 printf("Fone: %d \n", exibe->cfone);
                 printf("Nome: %s \n", exibe->nome);
-                printf("\n");
         }
     }
 }
 
-
 void *remover(void *pBuffer, void *count, void *lp){
-   
+        //printf("\033[H\033[J"); //limpa tela
         tipoagenda *rem,*aux;
-        aux = (pBuffer + ((sizeof(int)*3) + sizeof(tipoagenda)));
+        aux = pBuffer + (sizeof(int)*3) + sizeof(tipoagenda);
 
         printf("Digite o numero do contato que você deseja remover. \n");
-        	scanf("%d",&rem->cfone);
+        	scanf("%d",&aux->cfone);
         	getchar(); //pega o enter, para ele n ser pego pela proxima leitura
-      
-        for( *(int *)lp = 2; *(int *)lp <= *(int *)count; (*(int *)lp)++){
-
-            aux = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
+        printf("\n");
+        for( (*(int *)lp) = 2; (*(int *)lp) <= (*(int *)count); (*(int *)lp)++){
+            rem = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
             if(aux->cfone == rem->cfone){
-            	while((*(int *)lp) < (*(int *)count)){
-            		(*(int *)lp)++;
-            		rem = (pBuffer + ((sizeof(int)*3) + ((*(int *)lp) * sizeof(tipoagenda))));
+            	while(  (*(int *)lp) <= (*(int *)count) ){
+            		aux =  pBuffer + (3 * sizeof(int)) + (((*(int *)lp)+1) * sizeof(tipoagenda));
+                    strcpy(rem->nome,aux->nome);
+                    rem->cfone = aux->cfone;
                 }
+            (*(int *)count)--;
+            pBuffer = realloc(pBuffer, (3 * sizeof(int)) + ((*(int *)count) * sizeof(struct Agenda)));
+            return pBuffer;
             }
         }
+printf("Contato Não localizado. \n");
 return pBuffer;
 }
 
@@ -164,3 +151,45 @@ void menu(){
     //printf("CO : %i\n", *(int *)counT);
 
 }
+/*
+void *remover(void *pBuffer, void *count, void *lp){
+   
+        tipoagenda *rem,*aux;
+        aux = pBuffer + (sizeof(int)*3) + sizeof(tipoagenda);
+
+        printf("Digite o numero do contato que você deseja remover. \n");
+        	scanf("%d",&aux->cfone);
+        	getchar(); //pega o enter, para ele n ser pego pela proxima leitura
+        printf("\n");
+        for( *(int *)lp = 2; *(int *)lp <= *(int *)count; (*(int *)lp)++){
+            rem = pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
+            if(aux->cfone == rem->cfone){
+                //laço puxa o proximo pra frente no buffer
+            	while((*(int *)lp) < (*(int *)count)){
+                    aux =  pBuffer + (3 * sizeof(int)) + ( (*(int *)lp) * sizeof(tipoagenda));
+            		rem =  pBuffer + (3 * sizeof(int)) + (((*(int *)lp)+1) * sizeof(tipoagenda));
+                    aux->cfone = rem->cfone;
+                    strcpy(aux->nome,rem->nome);
+                    (*(int *)lp)++;
+                }
+                aux = pBuffer; // aux aponta para à area antiga
+                (*(int *)count)--;
+                pBuffer = malloc( (3 * sizeof(int)) + ( (*(int *)count) * sizeof(tipoagenda)) );
+                //pBuffer para a nova
+            
+                //copiando para nova area de memo
+                (*(int *)pBuffer) = (*(int *)aux);
+                (*(int *)(pBuffer + sizeof(int))) = (*(int *)(aux + sizeof(int)));
+                (*(int *)(pBuffer + (2 * sizeof(int)))) = (*(int *)(aux + (2 * sizeof(int))));
+                for( *(int *)lp = 2; *(int *)lp <= *(int *)count; (*(int *)lp)++){
+                    aux =     aux + (sizeof(int)*3) + ( (*(int *)lp) * sizeof(tipoagenda)); 
+                    rem = pBuffer + (sizeof(int)*3) + ( (*(int *)lp) * sizeof(tipoagenda));
+                    rem->cfone = aux->cfone;
+                    strcpy(rem->nome,aux->nome);
+                }
+            free(aux);
+        }
+    break;
+    }
+return pBuffer;
+}*/
