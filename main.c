@@ -12,6 +12,10 @@ void *adcTo(void *pBuffer, void *count);
 void *remover(void *pBuffer, void *count, void *lp);
 void printAll(void *pBuffer, void *count, void *lp);
 
+void Insertionsort(void *pBuffer, int *count); 
+void Selectsort(void *pBuffer, int *count);
+void Bubblesort(void *pBuffer, int *count);
+
 int main(){
 	
     void *pBuffer;  // Inicio da agenda
@@ -31,12 +35,13 @@ int main(){
     attVar(pBuffer,&op,&count,&lp);
 
 	do{
-
+    
     printf("\n ---------------- \n");
         printf("0: Sair \n");
         printf("1: Exibir \n");
         printf("2: Adicionar \n");
-        printf("3: Remover ");
+        printf("3: Remover \n");
+        printf("4: Ordenar ");
     printf("\n ---------------- \n");
         printf("Digite uma opção: \n");
         scanf("%d",(int *)op);
@@ -59,6 +64,40 @@ int main(){
 
 			case 3:
                 pBuffer = remover(pBuffer, count, lp);
+                attVar(pBuffer,&op,&count,&lp);
+                break;
+            
+            case 4:
+                printf("\033[H\033[J");
+                printf("\n --------Sort's-------- \n");
+                    printf("1: Ordenção por Inserção. \n");
+                    printf("2: Ordenção por Seleção. \n");
+                    printf("3: Ordenção por Bolha. \n");
+                    printf("4: Ordenção Rápida. ");
+                printf("\n ---------------- \n");
+                    printf("Digite uma opção: \n");
+                    scanf("%d",(int *)op);
+                    printf("\n");
+                
+                switch (*(int *)op) {
+                        
+                    case 1:
+                        Insertionsort(pBuffer,count);
+                        break;
+                    /*
+                    case 2:
+                        Selectsort();
+                        break;
+
+                    case 3:
+                        Bubblesort();
+                        break;
+
+                    case 4:
+                        Insertionsort();
+                        break;
+                    */
+                }
                 attVar(pBuffer,&op,&count,&lp);
                 break;
 
@@ -143,6 +182,59 @@ void *remover(void *pBuffer, void *count, void *lp){
 printf("Contato Não localizado. \n");
 return pBuffer;
 }
+//-------------------------------------------------------------/
+//---------------------------Sort's----------------------------/
+//-------------------------------------------------------------/
+
+void Insertionsort(void *pBuffer, int *count){ 
+	int tmp,i,j;
+    char tmpN[10];
+    tipoagenda *dataPROX,*dataANT;
+
+	for (j=3; j <= (*(int *)count); j++) { 
+        dataPROX = pBuffer+(3*sizeof(int))+(j*sizeof(tipoagenda));
+        i= j-1;
+        dataANT  = pBuffer+(3*sizeof(int))+(i*sizeof(tipoagenda));
+        tmp = dataPROX->cfone;
+        strcpy(tmpN,dataPROX->nome);
+		while ( (i>=0) && (tmp < dataANT->cfone) ) { 
+			dataPROX->cfone = dataANT->cfone;
+            strcpy(dataPROX->nome,dataANT->nome);
+			i--; 
+		}//while
+		dataANT->cfone = tmp; 
+        strcpy(dataANT->nome,tmpN);
+	}//for
+ }//Insertionsort
+
+/*void Selectsort(void *data,int *n){
+   int min,tmp,i,j,min_id; 
+   for (i=0; i<n-1; i++) { 
+     min = data[i]; 
+     for (j=i+1; j<n; j++) 
+       if (data[j] < min) { 
+         min = data[j]; 
+         min_id = j; 
+     	 } 
+     tmp = data[i]; 
+     data[i] = data[min_id]; 
+     data[min_id] = tmp;
+	min_id = i+1;
+  } 
+}
+
+void Bubblesort(void *data,int *n){ 
+	int tmp,i,j; 
+	for (i=0; i<n-1; i++) { 
+		for (j=0; j<n-i-1; j++) {
+			if (data[j] > data[j+1]){ 				
+            	tmp = data[j]; 
+				data[j] = data[j+1]; 
+				data[j+1] = tmp; 
+			} 
+		}
+	} 
+}*/
 
 /*
 void *remover(void *pBuffer, void *count, void *lp){
