@@ -12,9 +12,10 @@ void *adcTo(void *pBuffer, void *count);
 void *remover(void *pBuffer, void *count, void *lp);
 void printAll(void *pBuffer, void *count, void *lp);
 
-void Insertionsort(void *pBuffer, void *count, void *lp, void *op); 
-   void Selectsort(void *pBuffer, void *count, void *lp, void *op);
-   void Bubblesort(void *pBuffer, void *count, void *lp, void *op);
+ void Insertionsort(void *pBuffer, void *count, void *lp, void *op); 
+    void Selectsort(void *pBuffer, void *count, void *lp, void *op);
+    void Bubblesort(void *pBuffer, void *count, void *lp, void *op);
+    void *Quicksort(void *pBuffer, void *lp, void *count, void *op);
 
 int main(){
 	
@@ -92,11 +93,14 @@ int main(){
                     case 3:
                         Bubblesort(pBuffer,count,lp,op);
                         break;
-                    /*
+                    
                     case 4:
-                        Insertionsort();
+                        pBuffer = realloc(pBuffer,(3*sizeof(int))+(((*(int *)count)+1)*sizeof(tipoagenda)));
+                        attVar(pBuffer,&op,&count,&lp);
+                        pBuffer = Quicksort(pBuffer,lp,count,op);
+                        attVar(pBuffer,&op,&count,&lp);
                         break;
-                    */
+                    
                 }
                 attVar(pBuffer,&op,&count,&lp);
                 break;
@@ -190,13 +194,13 @@ void Insertionsort(void *pBuffer, void *count, void *lp, void *op){
     tipoagenda *dataPROX,*dataANT,*dataTMP;
     dataTMP = pBuffer+(3*sizeof(int))+sizeof(tipoagenda);
 
-	for ((*(int *)lp)=3; (*(int *)lp) <= (*(int *)count); (*(int *)lp)++) { 
+	for((*(int *)lp)=3; (*(int *)lp) <= (*(int *)count); (*(int *)lp)++) { 
         dataPROX = pBuffer+(3*sizeof(int))+((*(int *)lp)*sizeof(tipoagenda));
         (*(int *)op)= (*(int *)lp)-1;
         dataANT  = pBuffer+(3*sizeof(int))+((*(int *)op)*sizeof(tipoagenda));
         dataTMP->cfone = dataPROX->cfone;
         strcpy(dataTMP->nome,dataPROX->nome);
-		while ( ( (*(int *)op) >= 0) && (dataTMP->cfone < dataANT->cfone) ) { 
+		while( ( (*(int *)op) >= 0) && (dataTMP->cfone < dataANT->cfone) ) { 
 			dataPROX->cfone = dataANT->cfone;
             strcpy(dataPROX->nome,dataANT->nome);
 			(*(int *)op)--; 
@@ -224,18 +228,19 @@ void Selectsort(void *pBuffer, void *count, void *lp, void *op){
                 strcpy(dataPROX->nome,dataAUX->nome);
      	    } 
         }
-    } 
+    }
+    (*(int *)op)=1; 
 }
 
-void Bubblesort(void *pBuffer,void *count, void *lp, void *op){ 
+void Bubblesort(void *pBuffer, void *count, void *lp, void *op){ 
     tipoagenda *dataAUX, *dataPROX, *dataATUAL;
     dataAUX = pBuffer+(3*sizeof(int))+sizeof(tipoagenda); 
 
-	for ( (*(int *)lp) = 0; (*(int *)lp) <= ((*(int *)count)-1); (*(int *)lp)++){ //i
-		for ( (*(int *)op) = 2; (*(int *)op) <= (*(int *)count)-(*(int *)lp)-1; (*(int *)op)++){ //j
+	for( (*(int *)lp) = 0; (*(int *)lp) <= ((*(int *)count)-1); (*(int *)lp)++){ //i
+		for( (*(int *)op) = 2; (*(int *)op) <= (*(int *)count)-(*(int *)lp)-1; (*(int *)op)++){ //j
             dataATUAL = pBuffer+(3*sizeof(int))+( (*(int *)op)*sizeof(tipoagenda));
             dataPROX  = pBuffer+(3*sizeof(int))+( ((*(int *)op)+1)*sizeof(tipoagenda));
-			if (dataATUAL->cfone > dataPROX->cfone){ 				
+			if(dataATUAL->cfone > dataPROX->cfone){ 				
                 dataAUX->cfone = dataATUAL->cfone;
                 strcpy(dataAUX->nome,dataATUAL->nome);
                 dataATUAL->cfone = dataPROX->cfone;
@@ -245,6 +250,59 @@ void Bubblesort(void *pBuffer,void *count, void *lp, void *op){
 			} 
 		}
 	} 
+    (*(int *)op)=1;
+}
+
+void *Quicksort(void *pBuffer, void *lp, void *count, void *op){
+    (*(int *)count) = ((*(int *)count)-2);
+    (*(int *)lp) = 1;
+    tipoagenda *dataMID,*dataAUX,*dataFIRST,*dataLAST,*dataAUX2;
+    dataAUX = pBuffer+(3*sizeof(int))+sizeof(tipoagenda);
+    dataAUX2 = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+(((*(int *)count)+1)*sizeof(tipoagenda));
+    //tmp(dataAUX)
+    //i = left(*(int *)lp); 
+    *(int *)op = *(int *)lp;
+    //j = right(*(int *)count);
+    dataAUX2->cfone = (*(int *)count); 
+    //mid(dataMID) = data[(left + right)/2];
+      dataMID = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+( (((*(int *)lp)+(*(int *)count))/2)*sizeof(tipoagenda));
+    dataFIRST = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+( (*(int *)op)*sizeof(tipoagenda));
+     dataLAST = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+( (dataAUX2->cfone)*sizeof(tipoagenda));
+    do{ 
+        while(dataFIRST->cfone < dataMID->cfone){
+            (*(int *)op)++; 
+            dataFIRST = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+( (*(int *)op)*sizeof(tipoagenda));
+        }
+        
+        while(dataMID->cfone < dataLAST->cfone){
+            (dataAUX2->cfone)--;
+            dataLAST = pBuffer+(3*sizeof(int))+sizeof(tipoagenda)+( (dataAUX2->cfone)*sizeof(tipoagenda));
+        }
+        
+        if( (*(int *)op) <= dataAUX2->cfone){
+            dataAUX->cfone = dataFIRST->cfone;
+            strcpy(dataAUX->nome,dataFIRST->nome);
+
+            dataFIRST->cfone = dataLAST->cfone;
+            strcpy(dataFIRST->nome,dataLAST->nome);
+
+            dataLAST->cfone = dataAUX->cfone;
+            strcpy(dataLAST->nome,dataAUX->nome);
+
+            (*(int *)op)++; //i
+            (dataAUX2->cfone)--; //j
+        }
+    } while( (*(int *)op) <= dataAUX2->cfone);
+
+    if( (*(int *)lp) < dataAUX2->cfone){ 
+        Quicksort(pBuffer,lp,(void *)(dataAUX2->cfone),op); 
+    }
+
+    if( (*(int *)op) < (*(int *)count)){
+        Quicksort(pBuffer,op,count,op); 
+    }
+(*(int *)op)=1;
+return realloc(pBuffer,(3*sizeof(int))+sizeof(tipoagenda)+((*(int *)count)*sizeof(tipoagenda)));
 }
 
 /*
