@@ -186,6 +186,7 @@ void *remover(void *pBuffer, void *count, void *lp){
 printf("Contato Não localizado. \n");
 return pBuffer;
 }
+
 //-------------------------------------------------------------/
 //---------------------------Sort's----------------------------/
 //-------------------------------------------------------------/
@@ -304,6 +305,83 @@ void *Quicksort(void *pBuffer, void *lp, void *count, void *op){
 (*(int *)op)=1;
 return realloc(pBuffer,(3*sizeof(int))+sizeof(tipoagenda)+((*(int *)count)*sizeof(tipoagenda)));
 }
+
+
+//-------------------------------------------------------------/
+//--------------------------MET.AVL----------------------------/
+//-------------------------------------------------------------/
+void arvoreAVL(void *pBuffer, void *count, void *lp, void *op){
+	//(*(int *)count) = (*(int *)count);
+    //(*(int *)lp) = 1;
+	typedef long TipoChave;
+
+	typedef struct DataCenter{
+	TipoChave aChave;
+	/*
+	 algo mais
+	*/
+	}Registro;
+
+	typedef struct No{
+		Registro umRegistro;
+		tipoagenda pLeft,pRight;
+	}No;
+
+	Cr
+	
+}
+
+int FB(No *pRaiz){
+	if(pRaiz == NULL)
+		return 0;
+	return Altura(pRaiz->pEsq)-Altura(pRaiz->pDir);
+}
+
+int Altura(No *pRaiz){
+	int iEsq,iDir;
+
+	if(pRaiz == NULL)
+		return 0;
+
+	iEsq = Altura(pRaiz->pEsq);
+	iDir = Altura(pRaiz->pDir);
+
+	if(iEsq > iDir)
+		return iEsq + 1;
+	else
+		return iDir + 1;
+}
+
+void RSE(No **ppRaiz){ // Rotação Simples a Esquerda
+	No *pAux;
+
+	pAux = (*ppRaiz)->pDir;
+	(*ppRaiz)->pDir = pAux->pEsq;
+	pAux->pEsq = (*ppRaiz);
+	(*ppRaiz) = pAux;
+}
+
+void RSD(No **ppRaiz){ // Rotação Simples a Direita
+	No *pAux;
+
+	pAux = (*ppRaiz)->pEsq;
+	(*ppRaiz)->pEsq = pAux->pDir;
+	pAux->pDir = (*ppRaiz);
+	(*ppRaiz) = pAux;
+}
+
+int Balanceamento(No **ppRaiz){
+	int fb = FB(*ppRaiz);
+
+	if( fb > 1 )
+		return BalancaEsquerda(ppRaiz);
+	else if( fb < -1 )
+		return BalancaDireita(ppRaiz);
+	else
+		return 0;
+}
+
+
 
 /*
 void *remover(void *pBuffer, void *count, void *lp){
