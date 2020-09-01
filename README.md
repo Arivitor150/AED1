@@ -1,2 +1,2 @@
-# Agendanobuffer
-agenda de aed só com ponteiros.
+# Agenda em buffer
+agenda de algoritmo e estruturas de dados utilizando ponteiros.
